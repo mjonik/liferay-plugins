@@ -32,11 +32,9 @@ public class CDICrossContextRequestImpl extends CDICrossContextRequest {
 			HttpServletRequest httpServletRequest = getRequest();
 
 			HttpSession httpSession = new CDICrossContextSessionImpl(
-				httpServletRequest.getSession(create));
+				httpServletRequest.getSession(true));
 
-			if (create) {
 				_httpSession = httpSession;
-			}
 
 			return httpSession;
 		}
