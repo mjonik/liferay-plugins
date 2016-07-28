@@ -17,8 +17,17 @@
 
 package com.liferay.tasks.asset;
 
+import java.util.Locale;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import com.liferay.portal.kernel.portlet.LiferayPortletMode;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
@@ -31,13 +40,6 @@ import com.liferay.tasks.service.permission.TasksEntryPermission;
 import com.liferay.tasks.util.PortletKeys;
 import com.liferay.tasks.util.WebKeys;
 
-import java.util.Locale;
-
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
 /**
  * @author Matthew Kong
  */
@@ -47,6 +49,21 @@ public class TasksEntryAssetRenderer extends BaseAssetRenderer {
 		_entry = entry;
 	}
 
+	@Override
+	public String getIconPath(PortletRequest portletRequest) {
+		String priority = null;
+		if (_entry.getPriority() == 1) {
+			priority = "high";
+		}
+		else if (_entry.getPriority() == 2) {
+			priority = "normal";
+		}
+		else {
+			priority = "low";
+		}
+		return "/tasks-portlet/tasks/images/priority_" + priority + ".png";
+	}
+	
 	@Override
 	public String getClassName() {
 		return TasksEntry.class.getName();
@@ -73,30 +90,53 @@ public class TasksEntryAssetRenderer extends BaseAssetRenderer {
 	}
 
 	@Override
-	public String getURLViewInContext(
-		LiferayPortletRequest liferayPortletRequest,
-		LiferayPortletResponse liferayPortletResponse,
-		String noSuchEntryRedirect) {
+	public String getURLViewInContext(LiferayPortletRequest liferayPortletRequest,
+			LiferayPortletResponse liferayPortletResponse, String noSuchEntryRedirect) {
 
 		try {
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)liferayPortletRequest.getAttribute(
-					WebKeys.THEME_DISPLAY);
+			ThemeDisplay themeDisplay = (ThemeDisplay) liferayPortletRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 			User user = themeDisplay.getUser();
 
-			long portletPlid = PortalUtil.getPlidFromPortletId(
-				user.getGroupId(), true, PortletKeys.TASKS);
+			long portletPlid = PortalUtil.getPlidFromPortletId(user.getGroupId(), true, PortletKeys.TASKS);
 
-			PortletURL portletURL = PortletURLFactoryUtil.create(
-				liferayPortletRequest, PortletKeys.TASKS, portletPlid,
-				PortletRequest.RENDER_PHASE);
+			PortletURL portletURL = PortletURLFactoryUtil.create(liferayPortletRequest, PortletKeys.TASKS, portletPlid,
+					PortletRequest.RENDER_PHASE);
 
-			portletURL.setParameter("mvcPath", "/tasks/view.jsp");
+			portletURL.setParameter("mvcPath", "/tasks/view_task.jsp");
 
-			return portletURL.toString();
-		}
-		catch (Exception e) {
+			portletURL.setParameter("tasksEntryId", "" + _entry.getTasksEntryId());
+			portletURL.setWindowState(LiferayWindowState.POP_UP);
+			portletURL.setPortletMode(LiferayPortletMode.VIEW);
+
+		//	return "javascript:Liferay.Tasks.openTask('" + portletURL.toString() + "');";
+
+			StringBuffer js = new StringBuffer();
+			js.append("javascript:Liferay.Util.openWindow(");
+			js.append("{");
+			js.append("	dialog: {");			
+			js.append("		after: {");
+			js.append("			destroy: function(event) {");
+			js.append("				window.location.reload();");
+			js.append("			}");
+			js.append("		},");
+			js.append("		centered: true,");
+			js.append("		constrain: true,");
+			js.append("		cssClass: 'tasks-dialog',");
+			js.append("		destroyOnHide: true,");
+			js.append("		modal: true,");
+			js.append("		plugins: [Liferay.WidgetZIndex],");
+			js.append("		width: 800");
+			js.append("		},");
+			js.append("	id: 'TaskDialog',");
+			js.append("	title: Liferay.Language.get('model.resource.com.liferay.tasks.model.TasksEntry'),");
+			js.append("	uri: '" + portletURL.toString() + "'");
+			js.append("	}");
+			js.append(");");
+
+			return js.toString();
+			
+		} catch (Exception e) {
 		}
 
 		return null;
@@ -119,23 +159,18 @@ public class TasksEntryAssetRenderer extends BaseAssetRenderer {
 
 	@Override
 	public boolean hasViewPermission(PermissionChecker permissionChecker) {
-		return TasksEntryPermission.contains(
-			permissionChecker, _entry, ActionKeys.VIEW);
+		return TasksEntryPermission.contains(permissionChecker, _entry, ActionKeys.VIEW);
 	}
 
 	@Override
-	public String render(
-		RenderRequest renderRequest, RenderResponse renderResponse,
-		String template) {
+	public String render(RenderRequest renderRequest, RenderResponse renderResponse, String template) {
 
-		if (template.equals(TEMPLATE_ABSTRACT) ||
-			template.equals(TEMPLATE_FULL_CONTENT)) {
+		if (template.equals(TEMPLATE_ABSTRACT) || template.equals(TEMPLATE_FULL_CONTENT)) {
 
 			renderRequest.setAttribute(WebKeys.TASKS_ENTRY, _entry);
 
 			return "/tasks/asset/" + template + ".jsp";
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
