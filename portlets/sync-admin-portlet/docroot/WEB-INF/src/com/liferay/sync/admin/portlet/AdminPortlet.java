@@ -14,6 +14,9 @@
 
 package com.liferay.sync.admin.portlet;
 
+import com.liferay.portal.kernel.deploy.DeployManagerUtil;
+import com.liferay.portal.kernel.plugin.PluginPackage;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -21,6 +24,11 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
 import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.sync.admin.exception.OAuthPortletUndeployedException;
+import com.liferay.sync.service.SyncDeviceLocalServiceUtil;
+import com.liferay.sync.service.SyncPreferencesLocalServiceUtil;
 import com.liferay.sync.shared.util.PortletPropsKeys;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
@@ -37,6 +45,26 @@ import javax.portlet.PortletPreferences;
  */
 public class AdminPortlet extends MVCPortlet {
 
+	public void deleteDevice(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long syncDeviceId = ParamUtil.getLong(actionRequest, "syncDeviceId");
+
+		SyncDeviceLocalServiceUtil.deleteSyncDevice(syncDeviceId);
+	}
+
+	public void updateDevice(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long syncDeviceId = ParamUtil.getLong(actionRequest, "syncDeviceId");
+
+		int status = ParamUtil.getInteger(actionRequest, "status");
+
+		SyncDeviceLocalServiceUtil.updateStatus(syncDeviceId, status);
+	}
+
 	public void updatePreferences(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException, PortletException {
@@ -51,7 +79,7 @@ public class AdminPortlet extends MVCPortlet {
 
 	public void updateSites(
 			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception{
+		throws Exception {
 
 		String enabled = ParamUtil.getString(actionRequest, "enabled");
 		String permissions = ParamUtil.getString(actionRequest, "permissions");
@@ -105,13 +133,55 @@ public class AdminPortlet extends MVCPortlet {
 			PortletPropsKeys.SYNC_CLIENT_MAX_CONNECTIONS,
 			String.valueOf(maxConnections));
 
+		int maxDownloadRate = ParamUtil.getInteger(
+			actionRequest, "maxDownloadRate");
+
+		portletPreferences.setValue(
+			PortletPropsKeys.SYNC_CLIENT_MAX_DOWNLOAD_RATE,
+			String.valueOf(maxDownloadRate));
+
+		int maxUploadRate = ParamUtil.getInteger(
+			actionRequest, "maxUploadRate");
+
+		portletPreferences.setValue(
+			PortletPropsKeys.SYNC_CLIENT_MAX_UPLOAD_RATE,
+			String.valueOf(maxUploadRate));
+
+		boolean oAuthEnabled = ParamUtil.getBoolean(
+			actionRequest, "oAuthEnabled");
+
+		portletPreferences.setValue(
+			PortletPropsKeys.SYNC_OAUTH_ENABLED, String.valueOf(oAuthEnabled));
+
 		int pollInterval = ParamUtil.getInteger(actionRequest, "pollInterval");
 
 		portletPreferences.setValue(
 			PortletPropsKeys.SYNC_CLIENT_POLL_INTERVAL,
 			String.valueOf(pollInterval));
 
+		portletPreferences.setValue(
+			PortletPropsKeys.SYNC_CONTEXT_MODIFIED_TIME,
+			String.valueOf(System.currentTimeMillis()));
+
 		portletPreferences.store();
+
+		if (oAuthEnabled) {
+			PluginPackage oAuthPortletPluginPackage =
+				DeployManagerUtil.getInstalledPluginPackage("oauth-portlet");
+
+			if (oAuthPortletPluginPackage == null) {
+				SessionErrors.add(
+					actionRequest, OAuthPortletUndeployedException.class);
+
+				return;
+			}
+
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				actionRequest);
+
+			SyncPreferencesLocalServiceUtil.enableOAuth(
+				CompanyThreadLocal.getCompanyId(), serviceContext);
+		}
 	}
 
 }

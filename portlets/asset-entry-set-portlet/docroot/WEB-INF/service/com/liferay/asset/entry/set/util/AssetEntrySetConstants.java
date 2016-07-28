@@ -14,6 +14,9 @@
 
 package com.liferay.asset.entry.set.util;
 
+import com.liferay.asset.entry.set.model.AssetEntrySet;
+import com.liferay.portal.util.PortalUtil;
+
 /**
  * @author Matthew Kong
  */
@@ -22,11 +25,18 @@ public class AssetEntrySetConstants {
 	public static final String ASSET_ENTRY_KEY_PARTICIPANT_FULL_NAME =
 		"participantFullName";
 
-	public static final String ASSET_ENTRY_KEY_PARTICIPANT_PORTRAIT_URL =
-		"participantPortraitURL";
+	public static final String ASSET_ENTRY_KEY_PARTICIPANT_PROFILE_IMAGE_URL =
+		"participantProfileImageURL";
 
 	public static final String ASSET_ENTRY_KEY_PARTICIPANT_URL =
 		"participantURL";
+
+	public static final long ASSET_ENTRY_SET_CLASS_NAME_ID =
+		PortalUtil.getClassNameId(AssetEntrySet.class);
+
+	public static final String IMAGE_TYPE_FULL = "full";
+
+	public static final String IMAGE_TYPE_RAW = "raw";
 
 	public static final String PAYLOAD_KEY_ASSET_TAG_NAMES = "assetTagNames";
 
@@ -36,5 +46,9 @@ public class AssetEntrySetConstants {
 		"likedParticipants";
 
 	public static final String PAYLOAD_KEY_SHARED_TO = "sharedTo";
+
+	public static final int TYPE_ANNOUNCEMENT = 1;
+
+	public static final int TYPE_POST = 0;
 
 }

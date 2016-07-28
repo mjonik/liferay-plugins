@@ -276,7 +276,7 @@ public class AssetSharingEntryLocalServiceUtil {
 	}
 
 	public static void addAssetSharingEntries(long classNameId, long classPK,
-		java.util.Map<java.lang.Long, long[]> sharedToClassPKsMap)
+		java.util.Map<java.lang.Long, java.util.Set<java.lang.Long>> sharedToClassPKsMap)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		getService()
 			.addAssetSharingEntries(classNameId, classPK, sharedToClassPKsMap);
@@ -293,6 +293,14 @@ public class AssetSharingEntryLocalServiceUtil {
 	public static void deleteAssetSharingEntries(long classNameId, long classPK)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteAssetSharingEntries(classNameId, classPK);
+	}
+
+	public static void deleteSharedToAssetSharingEntries(
+		long sharedToClassNameId, long sharedToClassPK)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		getService()
+			.deleteSharedToAssetSharingEntries(sharedToClassNameId,
+			sharedToClassPK);
 	}
 
 	public static java.util.List<com.liferay.asset.sharing.model.AssetSharingEntry> getAssetSharingEntries(

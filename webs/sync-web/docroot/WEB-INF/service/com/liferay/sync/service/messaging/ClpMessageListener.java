@@ -21,6 +21,9 @@ import com.liferay.sync.service.ClpSerializer;
 import com.liferay.sync.service.SyncDLFileVersionDiffLocalServiceUtil;
 import com.liferay.sync.service.SyncDLObjectLocalServiceUtil;
 import com.liferay.sync.service.SyncDLObjectServiceUtil;
+import com.liferay.sync.service.SyncDeviceLocalServiceUtil;
+import com.liferay.sync.service.SyncDeviceServiceUtil;
+import com.liferay.sync.service.SyncPreferencesLocalServiceUtil;
 
 /**
  * @author Brian Wing Shun Chan
@@ -37,11 +40,15 @@ public class ClpMessageListener extends BaseMessageListener {
 
 		if (command.equals("undeploy") &&
 				servletContextName.equals(getServletContextName())) {
+			SyncDeviceLocalServiceUtil.clearService();
+
+			SyncDeviceServiceUtil.clearService();
 			SyncDLFileVersionDiffLocalServiceUtil.clearService();
 
 			SyncDLObjectLocalServiceUtil.clearService();
 
 			SyncDLObjectServiceUtil.clearService();
+			SyncPreferencesLocalServiceUtil.clearService();
 		}
 	}
 }

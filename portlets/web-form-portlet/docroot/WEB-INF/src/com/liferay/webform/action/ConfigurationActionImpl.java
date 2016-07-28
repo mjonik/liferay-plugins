@@ -64,7 +64,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 			return;
 		}
 
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 		boolean updateFields = ParamUtil.getBoolean(
@@ -230,7 +230,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 	protected void validateFields(ActionRequest actionRequest)
 		throws Exception {
 
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 		boolean sendAsEmail = GetterUtil.getBoolean(
@@ -254,16 +254,29 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 
 			String[] emailAdresses = WebFormUtil.split(
 				getParameter(actionRequest, "emailAddress"));
+			String emailFromAddress = GetterUtil.getString(
+				getParameter(actionRequest, "emailFromAddress"));
 
-			if (emailAdresses.length == 0) {
+			if ((emailAdresses.length == 0) ||
+				Validator.isNull(emailFromAddress)) {
+
 				SessionErrors.add(actionRequest, "emailAddressRequired");
 			}
 
-			for (String emailAdress : emailAdresses) {
-				emailAdress = emailAdress.trim();
+			if (Validator.isNotNull(emailFromAddress) &&
+				!Validator.isEmailAddress(emailFromAddress)) {
 
-				if (!Validator.isEmailAddress(emailAdress)) {
-					SessionErrors.add(actionRequest, "emailAddressInvalid");
+				SessionErrors.add(actionRequest, "emailAddressInvalid");
+			}
+			else {
+				for (String emailAdress : emailAdresses) {
+					emailAdress = emailAdress.trim();
+
+					if (!Validator.isEmailAddress(emailAdress)) {
+						SessionErrors.add(actionRequest, "emailAddressInvalid");
+
+						break;
+					}
 				}
 			}
 		}
@@ -315,7 +328,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 	}
 
 	protected boolean validateUniqueFieldNames(ActionRequest actionRequest) {
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 
 		Set<String> localizedUniqueFieldNames = new HashSet<String>();
 

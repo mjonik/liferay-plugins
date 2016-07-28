@@ -59,94 +59,11 @@ public class AssetEntrySetServiceWrapper implements AssetEntrySetService,
 	}
 
 	@Override
-	public com.liferay.asset.entry.set.model.AssetEntrySet addAssetEntrySet(
-		long parentAssetEntrySetId, long creatorClassNameId,
-		long creatorClassPK, java.lang.String payload,
-		boolean privateAssetEntrySet)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.addAssetEntrySet(parentAssetEntrySetId,
-			creatorClassNameId, creatorClassPK, payload, privateAssetEntrySet);
-	}
-
-	@Override
 	public com.liferay.portal.kernel.json.JSONObject addFileAttachment(
 		java.io.File file)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _assetEntrySetService.addFileAttachment(file);
-	}
-
-	@Override
-	public com.liferay.asset.entry.set.model.AssetEntrySet deleteAssetEntrySet(
-		long assetEntrySetId)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.deleteAssetEntrySet(assetEntrySetId);
-	}
-
-	@Override
-	public com.liferay.asset.entry.set.model.AssetEntrySet getAssetEntrySet(
-		long assetEntrySetId, int childAssetEntrySetsLimit,
-		int likedParticipantsLimit)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.getAssetEntrySet(assetEntrySetId,
-			childAssetEntrySetsLimit, likedParticipantsLimit);
-	}
-
-	@Override
-	public java.util.List<com.liferay.asset.entry.set.model.AssetEntrySet> getNewAssetEntrySets(
-		long createTime, long parentAssetEntrySetId, java.lang.String sharedTo,
-		java.lang.String[] assetTagNames, int childAssetEntrySetsLimit,
-		int likedParticipantsLimit, int start, int end)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.getNewAssetEntrySets(createTime,
-			parentAssetEntrySetId, sharedTo, assetTagNames,
-			childAssetEntrySetsLimit, likedParticipantsLimit, start, end);
-	}
-
-	@Override
-	public java.util.List<com.liferay.asset.entry.set.model.AssetEntrySet> getOldAssetEntrySets(
-		long createTime, long parentAssetEntrySetId, java.lang.String sharedTo,
-		java.lang.String[] assetTagNames, int childAssetEntrySetsLimit,
-		int likedParticipantsLimit, int start, int end)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.getOldAssetEntrySets(createTime,
-			parentAssetEntrySetId, sharedTo, assetTagNames,
-			childAssetEntrySetsLimit, likedParticipantsLimit, start, end);
-	}
-
-	@Override
-	public com.liferay.asset.entry.set.model.AssetEntrySet likeAssetEntrySet(
-		long assetEntrySetId, int childAssetEntrySetsLimit,
-		int likedParticipantsLimit)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.likeAssetEntrySet(assetEntrySetId,
-			childAssetEntrySetsLimit, likedParticipantsLimit);
-	}
-
-	@Override
-	public com.liferay.asset.entry.set.model.AssetEntrySet unlikeAssetEntrySet(
-		long assetEntrySetId, int childAssetEntrySetsLimit,
-		int likedParticipantsLimit)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.unlikeAssetEntrySet(assetEntrySetId,
-			childAssetEntrySetsLimit, likedParticipantsLimit);
-	}
-
-	@Override
-	public com.liferay.asset.entry.set.model.AssetEntrySet updateAssetEntrySet(
-		long assetEntrySetId, java.lang.String payload,
-		boolean privateAssetEntrySet)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _assetEntrySetService.updateAssetEntrySet(assetEntrySetId,
-			payload, privateAssetEntrySet);
 	}
 
 	/**
